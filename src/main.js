@@ -10,11 +10,22 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueAuth from '@websanova/vue-auth'
 import { store } from './store'
+import IdleVue from 'idle-vue'
+import decode from 'jwt-decode'
+
+const eventsHub = new Vue()
+
+Vue.use(IdleVue, {
+  eventEmitter: eventsHub,
+  idleTime: 1000 * 60 * 60 * 24
+})
 
 Vue.use(Vuetify)
 Vue.use(Notifications)
 Vue.use(VueAxios, axios)
-Vue.axios.defaults.baseURL = 'http://localhost:3000'
+Vue.axios.defaults.baseURL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'http://159.65.43.206'
+
+console.log(Vue.axios.defaults.baseURL)
 
 Vue.router = router
 
@@ -40,11 +51,45 @@ new Vue({
   created () {
     // this is where we will see if we're authenticated
     this.$store.dispatch('autoLogin')
+    .then((result) => {
+      if (result) {
+        this.$router.push('/home')
+      } else {
+        this.$router.push('/login')
+      }
+    })
+    .catch(() => {
+      this.$router.push('/login')
+    })
+  },
+  onIdle () {
+    console.log('idle logging out')
+    // token is missing or expired so we should log out
+    this.$store.dispatch('logout')
     .then(() => {
-      this.$router.push('/home')
+      this.$router.push('/login')
     })
-    .catch((err) => {
-      console.log(err)
-    })
+  },
+  onActive () {
+    if (localStorage.getItem('token')) {
+      const token = decode(localStorage.getItem('token'))
+      if (token) {
+        if (token.exp) {
+          const date = new Date(0)
+          date.setUTCSeconds(token.exp)
+          if (date > new Date()) {
+            console.log('active')
+            // token is not expired so we can refresh
+            this.$store.dispatch('refreshToken')
+            .then(() => {
+              console.log('token refreshed')
+            })
+            .catch(() => {
+              this.$router.push('/login')
+            })
+          }
+        }
+      }
+    }
   }
 })

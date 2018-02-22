@@ -13,7 +13,7 @@
         <v-tabs-slider color="primary"></v-tabs-slider>
         <v-tabs-item href="#forms">
           <v-icon>view_quilt</v-icon>
-          Form
+          FORM BUILDER
         </v-tabs-item>
         <v-tabs-item href="#workflow">
           <v-icon>done_all</v-icon>
@@ -44,7 +44,7 @@
     <v-tabs-items>
       <v-tabs-content id="forms">
         <v-card flat>
-          <form-builder></form-builder>
+          <form-builder :form="app.form"></form-builder>
         </v-card>
       </v-tabs-content>
       <v-tabs-content id="workflow">
@@ -88,33 +88,46 @@ export default {
   props: ['id'],
   data () {
     return {
-      model: { }
+      app: { }
     }
   },
   created () {
+    var _this = this
     if (this.$route.params.id !== null && this.$route.params.id !== undefined) {
       this.$store.dispatch('fetchApp', {id: this.$route.params.id})
+      .then((result) => {
+        if (result) {
+          _this.app = Object.assign({}, _this.$store.getters.app)
+        }
+      })
+    } else {
+      _this.app = {
+        name: '',
+        form: {
+          fields: []
+        }
+      }
     }
   },
   computed: {
-    app: {
-      get () {
-        return this.$store.getters.app
-      }
-    },
     loading: {
       get () {
         return this.$store.getters.loading
       }
     },
     canSave () {
-      const app = this.$store.getters.app
-      return app.name !== null && app.name !== undefined && app.name !== ''
+      return this.app.name !== null && this.app.name !== undefined && this.app.name !== ''
     }
   },
   methods: {
     onSave () {
+      var _this = this
       this.$store.dispatch('saveApp', this.app)
+      .then((result) => {
+        if (result) {
+          _this.app = Object.assign({}, _this.$store.getters.app)
+        }
+      })
     }
   },
   components: {

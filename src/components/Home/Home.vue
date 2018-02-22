@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="isAuthenticated">
     Home
   </v-container>
 </template>
@@ -8,6 +8,11 @@
 export default {
   data () {
     return { }
+  },
+  computed: {
+    isAuthenticated () {
+      return this.$store.getters.isAuthenticated
+    }
   }
 }
 </script>

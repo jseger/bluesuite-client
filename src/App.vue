@@ -102,6 +102,7 @@
     </v-snackbar>
     <v-snackbar :timeout="12000" v-model="warning" color="warning">{{warningText}}</v-snackbar>
     <v-snackbar :timeout="12000" v-model="info" color="info">{{infoText}}</v-snackbar> -->
+    <confirm ref="confirm"></confirm>
     <notifications group="error" position="top center" type="error"/>
     <notifications group="success" position="bottom right" type="success"/>
     <notifications group="warning" position="bottom right" type="warning"/>
@@ -110,6 +111,8 @@
 </template>
 
 <script>
+import Confirm from '@/components/Shared/ConfirmDialog'
+
 export default {
   data () {
     return {
@@ -173,6 +176,12 @@ export default {
         this.$nextTick(() => { this.notification = true })
       }
     }
+  },
+  components: {
+    'confirm': Confirm
+  },
+  mounted () {
+    this.$root.$confirm = this.$refs.confirm.open
   }
 }
 </script>

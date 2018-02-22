@@ -7,7 +7,7 @@ import Login from '@/components/User/Login'
 import Register from '@/components/User/Register'
 import Profile from '@/components/User/Profile'
 import AppList from '@/components/AppBuilder/List'
-import AppEdit from '@/components/AppBuilder/Edit'
+import AppBuilder from '@/components/AppBuilder/AppBuilder'
 
 Vue.use(Router)
 
@@ -50,13 +50,13 @@ export default new Router({
       path: '/appBuilder/edit/:id',
       name: 'App Edit',
       props: true,
-      component: AppEdit,
+      component: AppBuilder,
       beforeEnter: AuthGuard
     },
     {
       path: '/appBuilder/create',
       name: 'App Create',
-      component: AppEdit,
+      component: AppBuilder,
       beforeEnter: AuthGuard
     }
   ]

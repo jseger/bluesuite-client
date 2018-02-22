@@ -16,43 +16,60 @@ export default {
   },
   actions: {
     updateUser ({commit, dispatch}, payload) {
-      commit('setLoading', true)
-      axios.patch('/user/update', [
-        {
-          propName: 'email',
-          value: payload.email
-        },
-        {
-          propName: 'name',
-          value: payload.name
-        }
-      ])
-      .then((result) => {
-        localStorage.setItem('token', result.data.token)
-        commit('setIsAuthenticated', true)
-        const token = decode(result.data.token)
-        commit('setUser', {email: token.email, name: token.name})
+      return new Promise((resolve, reject) => {
+        axios.patch('/user/update', [
+          {
+            propName: 'email',
+            value: payload.email
+          },
+          {
+            propName: 'name',
+            value: payload.name
+          }
+        ])
+        .then((result) => {
+          localStorage.setItem('token', result.data.token)
+          commit('setIsAuthenticated', true)
+          const token = decode(result.data.token)
+          commit('setUser', {email: token.email, name: token.name})
+          commit('pushNotification', 'Profile updated!')
+          resolve(true)
+        })
+        .catch(err => {
+          commit('pushError', err.message)
+          reject(err)
+        })
       })
-      .catch(err => {
-        commit('pushError', err.message)
-      })
-      .finally(() => {
-        commit('setLoading', false)
+    },
+    changePassword ({commit, dispatch}, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post('/user/changePassword', {
+          password: payload.password,
+          newPassword: payload.newPassword
+        })
+        .then((result) => {
+          commit('pushNotification', 'Password changed!')
+          resolve(true)
+        })
+        .catch(err => {
+          commit('pushError', err.message)
+          reject(err)
+        })
       })
     },
     login ({commit}, payload) {
       return new Promise((resolve, reject) => {
         commit('setLoading', true)
-        axios.post('http://localhost:3000/user/login', {
+        axios.post('/user/login', {
           email: payload.email,
           password: payload.password
         })
         .then(result => {
-          console.log(result)
           localStorage.setItem('token', result.data.token)
           commit('setIsAuthenticated', true)
           const token = decode(result.data.token)
           commit('setUser', {email: token.email, name: token.name})
+          axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
           resolve(true)
         })
         .catch(err => {
@@ -67,12 +84,19 @@ export default {
     registerUser ({commit, dispatch}, payload) {
       return new Promise((resolve, reject) => {
         commit('setLoading', true)
-        axios.post('http://localhost:3000/user/signup', {
+        axios.post('/user/signup', {
           email: payload.email,
           password: payload.password,
           name: payload.name
         })
-        .then(dispatch('login', payload))
+        .then((result) => {
+          localStorage.setItem('token', result.data.token)
+          commit('setIsAuthenticated', true)
+          const token = decode(result.data.token)
+          commit('setUser', {email: token.email, name: token.name})
+          axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
+          resolve(true)
+        })
         .catch(err => {
           commit('pushError', err.message)
         })
@@ -82,27 +106,52 @@ export default {
       })
     },
     logout ({commit}) {
-      localStorage.setItem('token', null)
-      commit('setIsAuthenticated', false)
+      return new Promise((resolve, reject) => {
+        localStorage.setItem('token', null)
+        commit('setIsAuthenticated', false)
+        resolve(true)
+      })
     },
     autoLogin ({commit, getters}) {
       return new Promise((resolve, reject) => {
-        let token = decode(localStorage.getItem('token'))
-        if (token) {
-          if (token.exp) {
-            const date = new Date(0)
-            date.setUTCSeconds(token.exp)
-            if (date > new Date()) {
-              commit('setIsAuthenticated', true)
-              commit('setUser', {email: token.email, name: token.name})
-              axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
-              resolve(true)
-              return
+        if (localStorage.getItem('token')) {
+          let token = decode(localStorage.getItem('token'))
+          if (token) {
+            if (token.exp) {
+              const date = new Date(0)
+              date.setUTCSeconds(token.exp)
+              if (date > new Date()) {
+                commit('setIsAuthenticated', true)
+                commit('setUser', {email: token.email, name: token.name})
+                axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
+                resolve(true)
+                return
+              }
             }
           }
         }
         commit('setIsAuthenticated', false)
         resolve(false)
+      })
+    },
+    refreshToken ({commit, getters}) {
+      return new Promise((resolve, reject) => {
+        axios.post('/user/refreshToken', {
+          token: localStorage.getItem('token')
+        })
+        .then(result => {
+          localStorage.setItem('token', result.data.token)
+          commit('setIsAuthenticated', true)
+          const token = decode(result.data.token)
+          commit('setUser', {email: token.email, name: token.name})
+          axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
+          resolve(true)
+        })
+        .catch(err => {
+          commit('setIsAuthenticated', false)
+          commit('pushError', err.message)
+          reject(err)
+        })
       })
     }
   },

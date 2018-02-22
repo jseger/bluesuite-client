@@ -1,11 +1,24 @@
 <template>
 <v-container>
-  <v-layout row>
-    <v-flex xs12>
-      <v-card>
-        <v-card-text>
-          <v-container>
-            <form @submit.prevent="onSaveName">
+  <v-tabs id="mobile-tabs-5" fixed icons grow v-if="!loading">
+    <v-toolbar color="light-blue">
+      <v-tabs-bar class="transparent" dark slot="extension">
+        <v-tabs-slider color="primary"></v-tabs-slider>
+        <v-tabs-item href="#profile">
+          <v-icon>person</v-icon>
+          Profile
+        </v-tabs-item>
+        <v-tabs-item href="#password">
+          <v-icon>lock</v-icon>
+          Password
+        </v-tabs-item>
+      </v-tabs-bar>
+    </v-toolbar>
+    <v-tabs-items>
+      <v-tabs-content id="profile">
+        <v-card flat>
+          <v-card-text>
+          <form @submit.prevent="onUpdateProfile">
               <v-layout row>
                 <v-flex xs12>
                   <v-text-field
@@ -19,35 +32,17 @@
               </v-layout>
               <v-layout row>
                 <v-flex xs12>
-                  <v-checkbox v-model="changeEmail" label="Change Email"></v-checkbox>
-                </v-flex>
-              </v-layout>
-              <v-layout row>
-                <v-flex xs12>
                   <v-text-field
                     name="email"
                     label="Email"
                     id="email"
                     v-model="email"
                     type="email"
-                    required :disabled="!changeEmail">
+                    required>
                   </v-text-field>
                 </v-flex>
               </v-layout>
-              <v-layout row>
-                <v-flex xs12>
-                  <v-text-field 
-                    name="password"
-                    label="Password"
-                    id="password"
-                    v-model="password"
-                    type="password"
-                    v-if="changeEmail"
-                    :rules="[checkPassword]">
-                  </v-text-field>                  
-                </v-flex>
-              </v-layout>
-              <v-layout row>
+              <!-- <v-layout row>
                 <v-flex xs4>
                   <v-btn 
                   raised
@@ -65,10 +60,10 @@
                     <v-icon>delete</v-icon>
                   </v-btn>
                 </v-flex>
-              </v-layout>
+              </v-layout> -->
                <v-layout row>
                 <v-flex>
-                  <v-btn type="submit" color="primary" :disabled="loading" :loading="loading">
+                  <v-btn type="submit" color="primary" :disabled="busy" :loading="busy">
                     Save
                     <span slot="loader" class="custom-loader">
                       <v-icon light>cached</v-icon>
@@ -77,11 +72,67 @@
                 </v-flex>
               </v-layout>
             </form>
-          </v-container>
-        </v-card-text>
-      </v-card>
-    </v-flex>
-  </v-layout>
+            </v-card-text>
+        </v-card>
+      </v-tabs-content>
+      <v-tabs-content id="password">
+        <v-card flat>
+          <v-card-text>
+            <v-card-text>
+          <form @submit.prevent="onChangePassword">
+              <v-layout row>
+                <v-flex xs12>
+                  <v-text-field 
+                    name="password"
+                    label="Password"
+                    id="password"
+                    v-model="password"
+                    type="password"
+                    required>
+                  </v-text-field>                  
+                </v-flex>
+              </v-layout>
+              <v-layout row>
+                <v-flex xs12>
+                  <v-text-field 
+                    name="newPassword"
+                    label="New Password"
+                    id="newPassword"
+                    v-model="newPassword"
+                    type="password">
+                  </v-text-field>                  
+                </v-flex>
+              </v-layout>
+              <v-layout row>
+                <v-flex>
+                  <v-text-field 
+                    name="confirmPassword"
+                    label="Confirm Password"
+                    id="confirmPassword"
+                    v-model="confirmPassword"
+                    type="password"
+                    required
+                    :rules="[comparePasswords]">
+                  </v-text-field>
+                </v-flex>
+              </v-layout>
+               <v-layout row>
+                <v-flex>
+                  <v-btn type="submit" color="primary" :disabled="busy" :loading="busy">
+                    Save
+                    <span slot="loader" class="custom-loader">
+                      <v-icon light>cached</v-icon>
+                    </span>
+                    </v-btn>
+                </v-flex>
+              </v-layout>
+            </form>
+            </v-card-text>
+          </v-card-text>
+        </v-card>
+      </v-tabs-content>
+    </v-tabs-items>
+  </v-tabs>
 </v-container>
 </template>
 
@@ -94,7 +145,10 @@ export default {
       imageUrl: '',
       image: null,
       changeEmail: false,
-      password: ''
+      password: '',
+      newPassword: '',
+      confirmPassword: '',
+      busy: false
     }
   },
   created () {
@@ -102,6 +156,11 @@ export default {
     this.email = this.user.email
   },
   computed: {
+    comparePasswords () {
+      return this.newPassword !== this.confirmPassword
+        ? 'Passwords do not match'
+        : true
+    },
     user () {
       return this.$store.getters.user
     },
@@ -118,8 +177,29 @@ export default {
     }
   },
   methods: {
-    onSaveName () {
+    onUpdateProfile () {
+      this.busy = true
       this.$store.dispatch('updateUser', {name: this.name, email: this.email, password: this.password, image: this.image, changeEmail: this.changeEmail})
+      .then(result => {
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      .finally(() => {
+        this.busy = false
+      })
+    },
+    onChangePassword () {
+      this.busy = true
+      this.$store.dispatch('changePassword', {password: this.password, newPassword: this.newPassword})
+      .then(result => {
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      .finally(() => {
+        this.busy = false
+      })
     },
     onPickFile () {
       this.$refs.fileInput.click()
