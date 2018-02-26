@@ -109,6 +109,7 @@
                       :name="field.name"
                       :width="field.width"
                       :canEditField="true"
+                      :required="field.required"
                       v-on:dateChanged="date => {field.value = date}"
                       v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
                       v-on:fieldRemoved="onFieldRemoved(i)"></bs-date-field>
@@ -120,6 +121,7 @@
                       :name="field.name"
                       :width="field.width"
                       :canEditField="true"
+                      :required="field.required"
                       v-on:imageChanged="image => {field.value = image}" 
                       v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
                       v-on:fieldRemoved="onFieldRemoved(i)"></bs-image-field>
@@ -155,6 +157,7 @@
                       :width="field.width"
                       :icon="field.labelIcon"
                       :color="field.labelColor"
+                      :required="field.required"
                       :canEditField="true"
                       v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
                       v-on:fieldRemoved="onFieldRemoved(i)"></bs-label-field>
