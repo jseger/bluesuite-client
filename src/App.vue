@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer app fixed clipped permanent :mini-variant.sync="mini" v-if="isAuthenticated && !loading">
+    <v-navigation-drawer app fixed clipped permanent :mini-variant.sync="mini" v-if="isAuthenticated && !appLoading">
       <v-list dense>
         <v-list-group no-action>
           <v-list-tile avatar slot="item">
@@ -83,7 +83,7 @@
       <v-toolbar-title>{{pageTitle}}</v-toolbar-title>
       <v-spacer></v-spacer>
     </v-toolbar>
-    <v-toolbar app flat v-if="!isAuthenticated && !loading">
+    <v-toolbar app flat v-if="!isAuthenticated && !appLoading">
       <v-toolbar-title>
         <router-link :to="'/'" style="text-decoration: none;"><img src="@/assets/app-logo-name.png"/></router-link>
       </v-toolbar-title>
@@ -107,6 +107,7 @@
     <notifications group="success" position="bottom right" type="success"/>
     <notifications group="warning" position="bottom right" type="warning"/>
     <notifications group="info" position="top right" type="info"/>
+    <v-progress-circular indeterminate v-bind:size="250" color="primary" v-if="appLoading"></v-progress-circular>
   </v-app>
 </template>
 
@@ -162,6 +163,9 @@ export default {
     },
     loading () {
       return this.$store.getters.loading
+    },
+    appLoading () {
+      return this.$store.getters.appLoading
     }
   },
   watch: {

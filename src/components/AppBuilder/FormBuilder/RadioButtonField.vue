@@ -60,7 +60,7 @@
 
 <script>
 export default {
-  props: ['options', 'label', 'selectedOption', 'horizontal', 'required', 'canEditField', 'width'],
+  props: ['options', 'label', 'selectedOption', 'horizontal', 'required', 'canEditField', 'width', 'name'],
   data () {
     return {
       mutable: null,
@@ -78,7 +78,8 @@ export default {
       calculation: this.calculation,
       validation: this.validation,
       width: this.width,
-      options: this.options
+      options: this.options,
+      horizontal: this.horizontal
     }
   },
   computed: {
@@ -119,7 +120,8 @@ export default {
         calculation: this.calculation,
         validation: this.validation,
         width: this.width,
-        options: this.options
+        options: this.options,
+        horizontal: this.horizontal
       }
       this.dialog = false
     },

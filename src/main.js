@@ -23,7 +23,7 @@ Vue.use(IdleVue, {
 Vue.use(Vuetify)
 Vue.use(Notifications)
 Vue.use(VueAxios, axios)
-Vue.axios.defaults.baseURL = process.env.NODE_ENV === 'development' ? 'http:://localhost:3000' : 'https://bluesuiteapi.azurewebsites.net/'
+Vue.axios.defaults.baseURL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://bluesuiteapi.azurewebsites.net/'
 
 console.log(Vue.axios.defaults.baseURL)
 

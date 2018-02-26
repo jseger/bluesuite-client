@@ -59,6 +59,7 @@
                         :name="field.name"
                         :width="field.width"
                         :canEditField="true"
+                        :required="field.required"
                         v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
                         v-on:fieldRemoved="onFieldRemoved(i)"></bs-table-field>
                       </template>
@@ -386,14 +387,8 @@ export default {
           element[key] = original[key]
         }
       }
-      element.id = Date.now()
+      element.id = Date.now().toString()
       return element
-    },
-    removeOption (field, item) {
-      field.options.splice(field.options.indexOf(item), 1)
-    },
-    onOk (obj) {
-      this.form.fields.splice(obj.index, 1, Object.assign({}, obj.field))
     },
     onValueChanged (field) {
       // eslint-disable-next-line
@@ -415,9 +410,6 @@ export default {
       field.value.splice(index, 1)
     },
     onFieldChanged (field, editedField) {
-      console.log('field changed')
-      console.log(field)
-      console.log(editedField)
       for (const key in field) {
         if (field.hasOwnProperty(key) && editedField.hasOwnProperty(key)) {
           field[key] = editedField[key]

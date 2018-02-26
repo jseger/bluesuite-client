@@ -68,7 +68,7 @@
 
 <script>
 export default {
-  props: ['date', 'label', 'name', 'calculation', 'validation', 'width', 'canEditField'],
+  props: ['date', 'label', 'name', 'calculation', 'validation', 'width', 'canEditField', 'required'],
   data () {
     return {
       menu: null,

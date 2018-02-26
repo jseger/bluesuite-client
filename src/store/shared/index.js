@@ -2,6 +2,7 @@ export default {
   state: {
     pageTitle: '',
     loading: false,
+    appLoading: false,
     errors: [],
     info: [],
     warnings: [],
@@ -10,6 +11,9 @@ export default {
   mutations: {
     setLoading (state, payload) {
       state.loading = payload
+    },
+    setAppLoading (state, payload) {
+      state.appLoading = payload
     },
     pushError (state, payload) {
       state.notifications.push({group: 'error', text: payload, type: 'error'})

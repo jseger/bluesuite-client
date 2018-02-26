@@ -1,80 +1,71 @@
 <template>
-  <v-layout>
-    <v-layout row wrap>
-      <v-flex xs12>
-        <v-btn color="primary" flat @click="addItem()">
-            {{label}}
-          <v-icon left>add</v-icon>
-        </v-btn>
-      </v-flex>
-      <v-flex xs12>
-        <v-data-table
-          v-bind:headers="columns"
-          :items="_items"
-          hide-actions 
-          :expand="true"
-          class="elevation-1">
-          <template slot="headers" slot-scope="props">
-            <tr>
-              <th class="text-xs-left" style="width: 25px;"></th>
-              <th :key="i" v-for="(column, i) in columns" :class="column.alignText">{{column.label}}</th>
-            </tr>
-          </template>
-          <template slot="items" slot-scope="props">
-            <tr>
-              <td><v-btn color="error" @click="removeItem(props.item)" flat class="text-xs-left"><v-icon>delete_forever</v-icon></v-btn></td>
-              <td :key="i" v-for="(column, i) in columns" :class="column.alignText">
-                <template v-if="column.columnType === 'text'">
-                  <bs-text-field 
-                  :required="column.required"
-                  :multi-line="column.multiLine"
-                  :prefix="column.prefix"
-                  :suffix="column.suffix" 
-                  :text="props.item[column.name]" 
-                  v-on:textChanged="text => {props.item[column.name] = text}"></bs-text-field>
-                </template>
-                <template v-else-if="column.columnType === 'number'">
-                  <bs-number-field 
-                  :required="column.required"
-                  :multi-line="column.multiLine"
-                  :prefix="column.prefix"
-                  :suffix="column.suffix" 
-                  :number="props.item[column.name]" 
-                  v-on:textChanged="number => {props.item[column.name] = number}"></bs-number-field>
-                </template>
-                <template v-else-if="column.columnType === 'checkbox'">
-                  <bs-checkbox 
-                    :required="column.required" :checkState="props.item[column.name]"
-                    v-on:checkStateChanged="checkState => {props.item[column.name] = checkState}"></bs-checkbox>
-                </template>
-                <template v-else-if="column.columnType === 'image'">
-                  <bs-image-field :image="props.item[column.name]" :icon="true" :height="'50px'" v-on:imageChanged="image => {props.item[column.name] = image}" :preview="column.preview"></bs-image-field>
-                </template>
-                <template v-else-if="column.columnType === 'date'">
-                  <bs-date-field :date="props.item[column.name]" 
-                  v-on:dateChanged="date => {props.item[column.name] = date}"></bs-date-field>
-                </template>
-                <template v-else-if="column.columnType === 'select'">
-                  <bs-select-field :label="column.label" 
-                      :selectedOption="props.item[column.name]" 
-                      :options="column.options" 
-                      :required="column.required"
-                      :multiple="column.multiple"
-                      :name="column.name"
-                      :index="i"
-                      v-on:selectionChanged="option => {props.item[column.name] = option}"></bs-select-field>
-                </template>
-              </td>
-            </tr>
-          </template>
-          <template slot="expand" slot-scope="props">
-            <v-card flat>
-              <v-card-text>{{props.item.id}}</v-card-text>
-            </v-card>
-          </template>
-        </v-data-table>
-      </v-flex>
-    </v-layout>
+  <v-container fluid>
+    <v-flex xs12>
+      <v-btn color="primary" flat @click="addItem()">
+          {{label}}
+        <v-icon left>add</v-icon>
+      </v-btn>
+    </v-flex>
+      <v-data-table
+        v-bind:headers="columns"
+        :items="_items"
+        hide-actions 
+        :expand="true"
+        class="elevation-1">
+        <template slot="headers" slot-scope="props">
+          <tr>
+            <th class="text-xs-left"></th>
+            <th :key="i" v-for="(column, i) in columns" :class="column.alignText">{{column.label}}</th>
+          </tr>
+        </template>
+        <template slot="items" slot-scope="props">
+          <tr>
+            <td><v-btn color="error" @click="removeItem(props.item)" icon flat class="text-xs-left"><v-icon>delete_forever</v-icon></v-btn></td>
+            <td :key="i" v-for="(column, i) in columns" :class="column.alignText">
+              <template v-if="column.columnType === 'text'">
+                <bs-text-field 
+                :required="column.required"
+                :multi-line="column.multiLine"
+                :prefix="column.prefix"
+                :suffix="column.suffix" 
+                :text="props.item[column.name]" 
+                v-on:textChanged="text => {props.item[column.name] = text}"></bs-text-field>
+              </template>
+              <template v-else-if="column.columnType === 'number'">
+                <bs-number-field 
+                :required="column.required"
+                :multi-line="column.multiLine"
+                :prefix="column.prefix"
+                :suffix="column.suffix" 
+                :number="props.item[column.name]" 
+                v-on:textChanged="number => {props.item[column.name] = number}"></bs-number-field>
+              </template>
+              <template v-else-if="column.columnType === 'checkbox'">
+                <bs-checkbox 
+                  :required="column.required" :checkState="props.item[column.name]"
+                  v-on:checkStateChanged="checkState => {props.item[column.name] = checkState}"></bs-checkbox>
+              </template>
+              <template v-else-if="column.columnType === 'image'">
+                <bs-image-field :image="props.item[column.name]" :icon="true" :height="'50px'" v-on:imageChanged="image => {props.item[column.name] = image}" :preview="column.preview"></bs-image-field>
+              </template>
+              <template v-else-if="column.columnType === 'date'">
+                <bs-date-field :date="props.item[column.name]" 
+                v-on:dateChanged="date => {props.item[column.name] = date}"></bs-date-field>
+              </template>
+              <template v-else-if="column.columnType === 'select'">
+                <bs-select-field :label="column.label" 
+                    :selectedOption="props.item[column.name]" 
+                    :options="column.options" 
+                    :required="column.required"
+                    :multiple="column.multiple"
+                    :name="column.name"
+                    :index="i"
+                    v-on:selectionChanged="option => {props.item[column.name] = option}"></bs-select-field>
+              </template>
+            </td>
+          </tr>
+        </template>
+      </v-data-table>
 
     <v-dialog v-model="dialog">
       <v-btn slot="activator" v-if="canEditField" color="blue darken-2" flat icon>
@@ -201,7 +192,7 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-  </v-layout>
+  </v-container>
 </template>
 
 <script>
@@ -215,7 +206,7 @@ import BsSelectField from '@/components/Appbuilder/FormBuilder/SelectField'
 import draggable from 'vuedraggable'
 
 export default {
-  props: ['columns', 'label', 'items', 'canEditField', 'width', 'name'],
+  props: ['columns', 'label', 'items', 'canEditField', 'width', 'name', 'required'],
   data () {
     return {
       mutable: null,
@@ -273,7 +264,7 @@ export default {
     },
     addColumn () {
       this.mutable.tableColumns.push({
-        id: Date.now(),
+        id: Date.now().toString(),
         label: 'Column' + (this.mutable.tableColumns.length + 1),
         columnType: 'text',
         alignText: 'text-xs-left',
@@ -290,7 +281,7 @@ export default {
       })
     },
     addItem () {
-      let item = {id: Date.now()}
+      let item = {id: Date.now().toString()}
       this.columns.forEach(column => {
         item[column.name] = null
       })
