@@ -59,7 +59,7 @@ export default {
     },
     login ({commit}, payload) {
       return new Promise((resolve, reject) => {
-        commit('setLoading', true)
+        commit('setAppLoading', true)
         axios.post('/user/login', {
           email: payload.email,
           password: payload.password
@@ -77,13 +77,13 @@ export default {
           reject(err)
         })
         .finally(() => {
-          commit('setLoading', false)
+          commit('setAppLoading', false)
         })
       })
     },
     registerUser ({commit, dispatch}, payload) {
       return new Promise((resolve, reject) => {
-        commit('setLoading', true)
+        commit('setAppLoading', true)
         axios.post('/user/signup', {
           email: payload.email,
           password: payload.password,
@@ -101,7 +101,7 @@ export default {
           commit('pushError', err.message)
         })
         .finally(() => {
-          commit('setLoading', false)
+          commit('setAppLoading', false)
         })
       })
     },
