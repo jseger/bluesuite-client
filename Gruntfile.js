@@ -3,10 +3,9 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     npm_run_build: {
-      cmd: 'npm',
+      cmd: 'node',
       args: [
-        'run',
-        'build'
+        'build/build.js'
       ]
     }
   });
