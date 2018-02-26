@@ -15,6 +15,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-run');
 
   // Default task(s).
-  grunt.registerTask('default', ['run:npm_build_run']);
+  grunt.registerTask('default', ['run:npm_run_build']);
 
 };
