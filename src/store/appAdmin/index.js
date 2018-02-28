@@ -68,6 +68,10 @@ export default {
           {
             propName: 'form',
             value: payload.form
+          },
+          {
+            propName: 'workflow',
+            value: payload.workflow
           }])
           .then((result) => {
             commit('setApp', result.data.app)

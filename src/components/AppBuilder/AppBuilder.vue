@@ -1,5 +1,5 @@
 <template>
-  <v-tabs id="mobile-tabs-5" fixed icons grow v-if="!loading">
+  <v-tabs id="mobile-tabs-5" v-model="tab" fixed icons grow v-if="!loading">
     <v-toolbar color="light-blue">
       <v-text-field solo
         v-model="app.name"
@@ -49,7 +49,7 @@
       </v-tabs-content>
       <v-tabs-content id="workflow">
         <v-card flat>
-          <v-card-text>worflow</v-card-text>
+          <workflow-builder :workflow="app.workflow"></workflow-builder>
         </v-card>
       </v-tabs-content>
       <v-tabs-content id="submissions">
@@ -83,12 +83,14 @@
 
 <script>
 import FormBuilder from './FormBuilder/FormBuilder'
+import WorkflowBuilder from './WorkflowBuilder/WorkflowBuilder'
 
 export default {
   props: ['id'],
   data () {
     return {
-      app: { }
+      app: { },
+      tab: ''
     }
   },
   created () {
@@ -131,7 +133,8 @@ export default {
     }
   },
   components: {
-    'form-builder': FormBuilder
+    'form-builder': FormBuilder,
+    'workflow-builder': WorkflowBuilder
   }
 }
 </script>
