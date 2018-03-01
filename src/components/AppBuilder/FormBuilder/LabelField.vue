@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-flex xs12>
+    <v-flex xs12 class="ma-2">
       <v-alert outline :color="color" :icon="icon" :value="true">
         {{label}}
       </v-alert>
@@ -80,7 +80,7 @@ export default {
       for (let index = 0; index < 12; index++) {
         const element = {
           width: index + 1,
-          class: 'xs' + (index + 1) + ' pa-3'
+          class: 'xs' + (index + 1)
         }
         widths.push(element)
       }

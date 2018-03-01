@@ -44,7 +44,7 @@
     <v-tabs-items>
       <v-tabs-content id="forms">
         <v-card flat>
-          <form-builder :form="app.form"></form-builder>
+          <form-builder :form="app.form" :workflow="app.workflow"></form-builder>
         </v-card>
       </v-tabs-content>
       <v-tabs-content id="workflow">
@@ -107,6 +107,55 @@ export default {
         name: '',
         form: {
           fields: []
+        },
+        workflow: {
+          allowSaveForm: true,
+          allowMultipleSubmissions: true,
+          states: [{
+            name: 'Submitted',
+            userAction: true,
+            actionName: 'Submit',
+            sendNotificationToCollaborators: true,
+            requireApproval: true,
+            sendAdditionalNotifications: false,
+            sendNotificationToSubmitter: false,
+            minimumApprovals: 0,
+            alsoNotify: [],
+            approvers: [],
+            approvedState: 'Approved',
+            rejectedState: 'Rejected',
+            color: 'blue'
+          },
+          {
+            name: 'Approved',
+            userAction: false,
+            actionName: 'Approve',
+            sendNotificationToCollaborators: false,
+            requireApproval: false,
+            sendAdditionalNotifications: false,
+            sendNotificationToSubmitter: true,
+            minimumApprovals: 0,
+            alsoNotify: [],
+            approvers: [],
+            approvedState: '',
+            rejectedState: '',
+            color: 'green'
+          },
+          {
+            name: 'Rejected',
+            userAction: false,
+            actionName: 'Reject',
+            sendNotificationToCollaborators: false,
+            requireApproval: false,
+            sendAdditionalNotifications: false,
+            sendNotificationToSubmitter: true,
+            minimumApprovals: 0,
+            alsoNotify: [],
+            approvers: [],
+            approvedState: '',
+            rejectedState: '',
+            color: 'red'
+          }]
         }
       }
     }

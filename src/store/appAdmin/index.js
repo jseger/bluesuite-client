@@ -60,6 +60,7 @@ export default {
     saveApp ({commit, dispatch}, payload) {
       return new Promise((resolve, reject) => {
         commit('setLoading', true)
+        console.log(payload)
         if (payload._id) {
           axios.patch('/apps/' + payload._id, [{
             propName: 'name',

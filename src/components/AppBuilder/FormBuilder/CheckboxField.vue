@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-checkbox :label="label" :required="required" v-model="_checkState"></v-checkbox>
+    <v-checkbox :label="label" :required="required" v-model="_checkState" class="ma-2"></v-checkbox>
 
   <v-dialog v-model="dialog" dialog>
     <v-btn slot="activator" v-if="canEditField" color="blue darken-2" flat icon>
@@ -71,7 +71,7 @@ export default {
       for (let index = 0; index < 12; index++) {
         const element = {
           width: index + 1,
-          class: 'xs' + (index + 1) + ' pa-3'
+          class: 'xs' + (index + 1)
         }
         widths.push(element)
       }

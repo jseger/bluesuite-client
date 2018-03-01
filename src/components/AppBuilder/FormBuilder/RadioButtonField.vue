@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-radio-group :label="label" :mandatory="required" :row="horizontal" v-model="_selectedOption">
+    <v-radio-group :label="label" :mandatory="required" :row="horizontal" v-model="_selectedOption" class="ma-2">
       <template v-for="opt in options">
         <v-radio :label="opt" :value="opt" :key="opt"></v-radio>
       </template>
@@ -96,7 +96,7 @@ export default {
       for (let index = 0; index < 12; index++) {
         const element = {
           width: index + 1,
-          class: 'xs' + (index + 1) + ' pa-3'
+          class: 'xs' + (index + 1)
         }
         widths.push(element)
       }

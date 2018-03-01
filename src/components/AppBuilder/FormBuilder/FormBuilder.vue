@@ -1,175 +1,181 @@
 <template>
-  <v-layout row wrap>
-    <v-flex xs2>
-      <v-card flat>
-        <v-card-title>
-          <v-toolbar color="grey lighten-4" flat>
-            <v-toolbar-title>Form Controls</v-toolbar-title>
-            <v-spacer></v-spacer>
-          </v-toolbar>
-        </v-card-title>
-        <v-card-text>
-          <v-layout row wrap>
-            <v-flex xs12>
-              <v-list dense>
-                <draggable 
-                v-model="formControls" 
-                :options="{sort: false, group: {name: 'fields', pull: 'clone', put: false}}" 
-                style="min-height: 100px"
-                :clone="onCloned"
-                class="pb-5">
-                  <v-container v-for="(formControl, i) in formControls" :key="i" draggable="true">
-                    <v-list-tile avatar @click="">
-                      <v-list-tile-avatar>
-                        <v-icon>{{ formControl.icon }}</v-icon>
-                      </v-list-tile-avatar>
-                      <v-list-tile-content>
-                        <v-list-tile-title>{{formControl.description}}</v-list-tile-title>
-                      </v-list-tile-content>
-                    </v-list-tile>
-                  </v-container>
-                </draggable>
-              </v-list>
-            </v-flex>
-          </v-layout>
-        </v-card-text>
-      </v-card>
-    </v-flex>
-    <v-flex xs10>
-      <v-card :v-if="!loading" flat color="grey lighten-2">
-        <v-card-title>
-          <v-toolbar color="grey lighten-2" flat>
-            <v-toolbar-title>Drag the Form Controls Below</v-toolbar-title>
-            <v-spacer></v-spacer>
-          </v-toolbar>
-        </v-card-title>
-        <v-card-text>
-              <v-container>
-                <draggable element="v-layout" row wrap
-                v-model="form.fields" 
-                :options="{group: {name: 'fields'}}" 
-                style="min-height: 100px; background-color: white;"
-                class="pb-5">
-                  <v-flex v-for="(field, i) in form.fields" :key="field.id" :class="field.width">
-                    <v-layout row>
-                      <template v-if="field.type === 'table'">
-                        <bs-table-field :label="field.label" 
-                        :items="field.value" 
-                        :columns="field.tableColumns"
-                        :name="field.name"
-                        :width="field.width"
-                        :canEditField="true"
-                        :required="field.required"
-                        v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
-                        v-on:fieldRemoved="onFieldRemoved(i)"></bs-table-field>
-                      </template>
-                      <template v-else-if="field.type === 'checkbox'">
-                        <bs-checkbox :label="field.label" 
-                          :required="field.required" 
-                          :checkState="field.value" 
+  <v-container :v-if="!loading" >
+    <v-layout row>
+      <v-flex xs12>
+        <v-alert outline color="info" icon="info" :value="true">
+          Editing the form after it is in use may complicate integration with the data tables.  Make sure you know what you're doing!
+        </v-alert>
+        <v-card>
+          <v-toolbar color="light-blue lighten-2" dark>
+          <v-toolbar-title>Design Form</v-toolbar-title>
+          <v-spacer></v-spacer>
+        </v-toolbar>
+          <v-card-text>
+            <v-container>
+              <v-layout row>
+                <v-flex xs2>
+                  <v-list dense>
+                    <draggable 
+                    v-model="formControls" 
+                    :options="{sort: false, group: {name: 'fields', pull: 'clone', put: false}}" 
+                    style="min-height: 100px"
+                    :clone="onCloned"
+                    class="pb-5">
+                      <v-container v-for="(formControl, i) in formControls" :key="i" draggable="true">
+                        <v-list-tile avatar @click="">
+                          <v-list-tile-avatar>
+                            <v-icon>{{ formControl.icon }}</v-icon>
+                          </v-list-tile-avatar>
+                          <v-list-tile-content>
+                            <v-list-tile-title>{{formControl.description}}</v-list-tile-title>
+                          </v-list-tile-content>
+                        </v-list-tile>
+                      </v-container>
+                    </draggable>
+                  </v-list>
+                </v-flex>
+                <v-flex xs10>
+                  <v-container>
+                    <draggable element="v-layout" row wrap
+                    v-model="form.fields"
+                    :options="{group: {name: 'fields'}}" 
+                    style="min-height: 100px; background-color: #90A4AE;"
+                    class="pb-5">
+                      <v-flex v-for="(field, i) in form.fields" :key="field.id" :class="field.width">
+                        <v-layout row  style="background-color: white;" class="ma-1">
+                          <template v-if="field.type === 'table'">
+                            <bs-table-field :label="field.label" 
+                            :items="field.value" 
+                            :columns="field.tableColumns"
+                            :name="field.name"
+                            :width="field.width"
+                            :canEditField="true"
+                            :required="field.required"
+                            v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
+                            v-on:fieldRemoved="onFieldRemoved(i)"></bs-table-field>
+                          </template>
+                          <template v-else-if="field.type === 'checkbox'">
+                            <bs-checkbox :label="field.label" 
+                              :required="field.required" 
+                              :checkState="field.value" 
+                              :name="field.name"
+                              :width="field.width"
+                              :canEditField="true"
+                              v-on:checkStateChanged="checkState => {field.value = checkState}"
+                              v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
+                              v-on:fieldRemoved="onFieldRemoved(i)"></bs-checkbox>
+                          </template>
+                          <template v-else-if="field.type === 'text'">
+                            <bs-text-field :label="field.label" 
+                            :required="field.required"
+                            :multiLine="field.multiLine"
+                            :prefix="field.prefix"
+                            :suffix="field.suffix" 
+                            :text="field.value" 
+                            :name="field.name"
+                            :width="field.width"
+                            :canEditField="true"
+                            :alignText="field.alignText"
+                            v-on:textChanged="text => {field.value = text}"
+                            v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
+                            v-on:fieldRemoved="onFieldRemoved(i)"></bs-text-field>
+                        </template>
+                        <template v-else-if="field.type === 'number'">
+                            <bs-number-field :label="field.label" 
+                            :required="field.required"
+                            :multiLine="field.multiLine"
+                            :prefix="field.prefix"
+                            :suffix="field.suffix" 
+                            :number="field.value" 
+                            :name="field.name"
+                            :width="field.width"
+                            :canEditField="true"
+                            v-on:numberChanged="number => {field.value = number}"
+                            v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
+                            v-on:fieldRemoved="onFieldRemoved(i)"></bs-number-field>
+                        </template>
+                        <template v-else-if="field.type === 'date'">
+                          <bs-date-field :label="field.label" 
+                          :date="field.value" 
                           :name="field.name"
                           :width="field.width"
                           :canEditField="true"
-                          v-on:checkStateChanged="checkState => {field.value = checkState}"
+                          :required="field.required"
+                          v-on:dateChanged="date => {field.value = date}"
                           v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
-                          v-on:fieldRemoved="onFieldRemoved(i)"></bs-checkbox>
-                      </template>
-                      <template v-else-if="field.type === 'text'">
-                        <bs-text-field :label="field.label" 
-                        :required="field.required"
-                        :multiLine="field.multiLine"
-                        :prefix="field.prefix"
-                        :suffix="field.suffix" 
-                        :text="field.value" 
-                        :name="field.name"
-                        :width="field.width"
-                        :canEditField="true"
-                        :alignText="field.alignText"
-                        v-on:textChanged="text => {field.value = text}"
-                        v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
-                        v-on:fieldRemoved="onFieldRemoved(i)"></bs-text-field>
-                    </template>
-                    <template v-else-if="field.type === 'number'">
-                        <bs-number-field :label="field.label" 
-                        :required="field.required"
-                        :multiLine="field.multiLine"
-                        :prefix="field.prefix"
-                        :suffix="field.suffix" 
-                        :number="field.value" 
-                        :name="field.name"
-                        :width="field.width"
-                        :canEditField="true"
-                        v-on:numberChanged="number => {field.value = number}"
-                        v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
-                        v-on:fieldRemoved="onFieldRemoved(i)"></bs-number-field>
-                    </template>
-                    <template v-else-if="field.type === 'date'">
-                      <bs-date-field :label="field.label" 
-                      :date="field.value" 
-                      :name="field.name"
-                      :width="field.width"
-                      :canEditField="true"
-                      :required="field.required"
-                      v-on:dateChanged="date => {field.value = date}"
-                      v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
-                      v-on:fieldRemoved="onFieldRemoved(i)"></bs-date-field>
-                    </template>
-                    <template v-else-if="field.type === 'image'">
-                      <bs-image-field :image="field.value" 
-                      :label="field.label" 
-                      :preview="field.preview"
-                      :name="field.name"
-                      :width="field.width"
-                      :canEditField="true"
-                      :required="field.required"
-                      v-on:imageChanged="image => {field.value = image}" 
-                      v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
-                      v-on:fieldRemoved="onFieldRemoved(i)"></bs-image-field>
-                    </template>
-                    <template v-else-if="field.type === 'radio'">
-                      <bs-radio-button-field :label="field.label" 
-                      :required="field.required" 
-                      :horizontal="field.horizontal" 
-                      :selectedOption="field.value" 
-                      :options="field.options"
-                      :name="field.name"
-                      :width="field.width"
-                      :canEditField="true"
-                      v-on:selectionChanged="option => {field.value = option}"
-                      v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
-                      v-on:fieldRemoved="onFieldRemoved(i)"></bs-radio-button-field>
-                    </template>
-                    <template v-else-if="field.type === 'select'">
-                      <bs-select-field :label="field.label" 
-                      :selectedOption="field.value" 
-                      :options="field.options" 
-                      :required="field.required"
-                      :multiple="field.multiple"
-                      :name="field.name"
-                      :width="field.width"
-                      :canEditField="true"
-                      v-on:selectionChanged="option => {field.value = option}"
-                      v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
-                      v-on:fieldRemoved="onFieldRemoved(i)"></bs-select-field>
-                    </template>
-                    <template v-else-if="field.type === 'label'">
-                      <bs-label-field :label="field.label"
-                      :width="field.width"
-                      :icon="field.labelIcon"
-                      :color="field.labelColor"
-                      :required="field.required"
-                      :canEditField="true"
-                      v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
-                      v-on:fieldRemoved="onFieldRemoved(i)"></bs-label-field>
-                    </template>
+                          v-on:fieldRemoved="onFieldRemoved(i)"></bs-date-field>
+                        </template>
+                        <template v-else-if="field.type === 'image'">
+                          <bs-image-field :image="field.value" 
+                          :label="field.label" 
+                          :preview="field.preview"
+                          :name="field.name"
+                          :width="field.width"
+                          :canEditField="true"
+                          :required="field.required"
+                          v-on:imageChanged="image => {field.value = image}" 
+                          v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
+                          v-on:fieldRemoved="onFieldRemoved(i)"></bs-image-field>
+                        </template>
+                        <template v-else-if="field.type === 'radio'">
+                          <bs-radio-button-field :label="field.label" 
+                          :required="field.required" 
+                          :horizontal="field.horizontal" 
+                          :selectedOption="field.value" 
+                          :options="field.options"
+                          :name="field.name"
+                          :width="field.width"
+                          :canEditField="true"
+                          v-on:selectionChanged="option => {field.value = option}"
+                          v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
+                          v-on:fieldRemoved="onFieldRemoved(i)"></bs-radio-button-field>
+                        </template>
+                        <template v-else-if="field.type === 'select'">
+                          <bs-select-field :label="field.label" 
+                          :selectedOption="field.value" 
+                          :options="field.options" 
+                          :required="field.required"
+                          :multiple="field.multiple"
+                          :name="field.name"
+                          :width="field.width"
+                          :canEditField="true"
+                          v-on:selectionChanged="option => {field.value = option}"
+                          v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
+                          v-on:fieldRemoved="onFieldRemoved(i)"></bs-select-field>
+                        </template>
+                        <template v-else-if="field.type === 'label'">
+                          <bs-label-field :label="field.label"
+                          :width="field.width"
+                          :icon="field.labelIcon"
+                          :color="field.labelColor"
+                          :required="field.required"
+                          :canEditField="true"
+                          v-on:fieldChanged="editedField => onFieldChanged(field, editedField)"
+                          v-on:fieldRemoved="onFieldRemoved(i)"></bs-label-field>
+                        </template>
+                        </v-layout>
+                      </v-flex>
+                    </draggable>
+                  </v-container>
+                  <v-container>
+                    <v-layout row>
+                      <v-flex xs12 class="text-xs-right">
+                        <v-btn v-for="(state, i) in workflow.states" :key="i" :color="state.color" v-if="state.userAction">
+                          {{state.actionName}}
+                        </v-btn>
+                        <v-btn v-if="workflow.allowSaveForm" >Save</v-btn>
+                        <v-btn>Cancel</v-btn>
+                      </v-flex>
                     </v-layout>
-                  </v-flex>
-                </draggable>
-              </v-container>
-        </v-card-text>
-      </v-card>
-    </v-flex>
-  </v-layout>
+                  </v-container>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
@@ -189,7 +195,7 @@ import BsLabelField from '@/components/AppBuilder/FormBuilder/LabelField'
 Vue.use(draggable)
 
 export default {
-  props: ['form'],
+  props: ['form', 'workflow'],
   data () {
     return {
       menu: null,
@@ -206,7 +212,7 @@ export default {
         multiLine: false,
         prefix: '',
         suffix: '',
-        width: 'xs12 pa-3',
+        width: 'xs12',
         calculation: '',
         value: '',
         defaultValue: ''
@@ -221,7 +227,7 @@ export default {
         required: true,
         prefix: '',
         suffix: '',
-        width: 'xs12 pa-3',
+        width: 'xs12',
         calculation: '',
         value: 0,
         defaultValue: 0
@@ -234,7 +240,7 @@ export default {
         label: 'Checkbox',
         name: 'checkboxField1',
         required: true,
-        width: 'xs12 pa-3',
+        width: 'xs12',
         calculation: '',
         value: false,
         defaultValue: true
@@ -248,7 +254,7 @@ export default {
         name: 'comboxboxField1',
         required: true,
         multiple: false,
-        width: 'xs12 pa-3',
+        width: 'xs12',
         calculation: '',
         value: null,
         defaultValue: null,
@@ -266,7 +272,7 @@ export default {
         label: 'Date',
         name: 'dateField1',
         required: true,
-        width: 'xs12 pa-3',
+        width: 'xs12',
         calculation: '',
         value: null,
         defaultValue: null
@@ -282,7 +288,7 @@ export default {
         label: 'Some imortant message',
         name: 'label',
         childListFields: [],
-        width: 'xs12 pa-3',
+        width: 'xs12',
         calculation: '',
         value: '',
         defaultValue: ''
@@ -296,7 +302,7 @@ export default {
         name: 'radioButtonsField1',
         required: true,
         horizontal: false,
-        width: 'xs12 pa-3',
+        width: 'xs12',
         calculation: '',
         value: '',
         defaultValue: '',
@@ -315,7 +321,7 @@ export default {
         name: 'imageField',
         required: true,
         preview: true,
-        width: 'xs12 pa-3',
+        width: 'xs12',
         calculation: '',
         value: {
           imageUrl: null,
@@ -335,7 +341,7 @@ export default {
         multiple: false,
         lookupList: null,
         lookupListFields: [],
-        width: 'xs12 pa-3',
+        width: 'xs12',
         calculation: '',
         value: {},
         defaultValue: {}
@@ -349,7 +355,7 @@ export default {
         label: 'Table',
         name: 'table1',
         tableColumns: [],
-        width: 'xs12 pa-3',
+        width: 'xs12',
         alignText: 'text-xs-center',
         calculation: '',
         value: []

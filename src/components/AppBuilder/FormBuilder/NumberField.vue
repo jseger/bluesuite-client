@@ -7,6 +7,7 @@
       :multi-line="false"
       :prefix="prefix"
       :suffix="suffix" 
+      class="ma-2"
       v-model="_number" @change="$emit('valueChanged', _number)"></v-text-field>
 
     <v-dialog v-model="dialog" dialog>
@@ -93,7 +94,7 @@ export default {
       for (let index = 0; index < 12; index++) {
         const element = {
           width: index + 1,
-          class: 'xs' + (index + 1) + ' pa-3'
+          class: 'xs' + (index + 1)
         }
         widths.push(element)
       }

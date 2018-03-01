@@ -5,6 +5,7 @@
     :multiple="multiple"
     :items="options"
     v-model="_selectedOption"
+    class="ma-2"
     autocomplete>
   </v-select>
 
@@ -100,7 +101,7 @@ export default {
       for (let index = 0; index < 12; index++) {
         const element = {
           width: index + 1,
-          class: 'xs' + (index + 1) + ' pa-3'
+          class: 'xs' + (index + 1)
         }
         widths.push(element)
       }
