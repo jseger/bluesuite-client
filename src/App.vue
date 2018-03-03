@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer app fixed clipped permanent :mini-variant.sync="mini" v-if="isAuthenticated && !appLoading">
+    <v-navigation-drawer app fixed clipped permanent :mini-variant.sync="mini" v-if="isAuthenticated && !appLoading" width="200">
       <v-list dense>
         <v-list-group no-action>
           <v-list-tile avatar slot="item">

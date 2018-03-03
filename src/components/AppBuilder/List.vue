@@ -9,14 +9,17 @@
             <v-icon right>add</v-icon>
           </v-btn>
         </v-toolbar>
-        <v-list>
+        <v-list two-line>
           <template v-for="app in apps">
-            <v-list-tile v-bind:key="app._id">
+            <v-list-tile :key="app._id" @click="navigate('/appBuilder/edit/' + app._id)">
               <v-list-tile-content>
-                <v-list-tile-title></v-list-tile-title><v-btn color="primary" flat router :to="'/appBuilder/edit/' + app._id">{{app.name}}</v-btn>
+                <v-list-tile-title>
+                  {{app.name}}
+                </v-list-tile-title>
+                <v-list-tile-sub-title>{{app.createdAt | date}}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>
-                <v-btn color="error" @click="onDelete(app)" flat><v-icon>delete_forever</v-icon></v-btn>
+                <v-btn color="grey lighten-1" @click.stop="onDelete(app)" flat><v-icon>delete_forever</v-icon></v-btn>
               </v-list-tile-action>
             </v-list-tile>
           </template>
@@ -57,6 +60,9 @@ export default {
           })
         }
       })
+    },
+    navigate (path) {
+      this.$router.push(path)
     }
   }
 }

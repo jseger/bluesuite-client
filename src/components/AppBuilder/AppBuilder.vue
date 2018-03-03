@@ -43,14 +43,10 @@
     </v-toolbar>
     <v-tabs-items>
       <v-tabs-content id="forms">
-        <v-card flat>
-          <form-builder :form="app.form" :workflow="app.workflow"></form-builder>
-        </v-card>
+        <form-builder :form="app.form" :workflow="app.workflow"></form-builder>
       </v-tabs-content>
       <v-tabs-content id="workflow">
-        <v-card flat>
-          <workflow-builder :workflow="app.workflow"></workflow-builder>
-        </v-card>
+        <workflow-builder :workflow="app.workflow"></workflow-builder>
       </v-tabs-content>
       <v-tabs-content id="submissions">
         <v-card flat>
@@ -68,9 +64,7 @@
         </v-card>
       </v-tabs-content>
       <v-tabs-content id="collaborators">
-        <v-card flat>
-          <v-card-text>collaborators</v-card-text>
-        </v-card>
+        <collaborators :users="app.collaborators" :appId="app._id"></collaborators>
       </v-tabs-content>
       <v-tabs-content id="users">
         <v-card flat>
@@ -84,6 +78,7 @@
 <script>
 import FormBuilder from './FormBuilder/FormBuilder'
 import WorkflowBuilder from './WorkflowBuilder/WorkflowBuilder'
+import Collaborators from './Collaborators/Collaborators'
 
 export default {
   props: ['id'],
@@ -183,7 +178,8 @@ export default {
   },
   components: {
     'form-builder': FormBuilder,
-    'workflow-builder': WorkflowBuilder
+    'workflow-builder': WorkflowBuilder,
+    'collaborators': Collaborators
   }
 }
 </script>

@@ -31,7 +31,7 @@ export default {
           resolve(true)
         })
         .catch(err => {
-          commit('pushError', err.message)
+          commit('pushError', err.response.data.message)
           reject(err)
         })
         .finally(() => {
@@ -49,7 +49,7 @@ export default {
           resolve(true)
         })
         .catch(err => {
-          commit('pushError', err.message)
+          commit('pushError', err.response.data.message)
           reject(err)
         })
         .finally(() => {
@@ -81,7 +81,7 @@ export default {
           })
           .catch((err) => {
             reject(err)
-            commit('pushError', err.message)
+            commit('pushError', err.response.data.message)
           })
           .finally(() => {
             commit('setLoading', false)
@@ -96,7 +96,7 @@ export default {
           })
           .catch((err) => {
             reject(err)
-            commit('pushError', err.message)
+            commit('pushError', err.response.data.message)
           })
           .finally(() => {
             commit('setLoading', false)
@@ -113,7 +113,7 @@ export default {
           resolve(true)
         })
         .catch((err) => {
-          commit('pushError', err.message)
+          commit('pushError', err.response.data.message)
           reject(err)
         })
         .finally(() => {

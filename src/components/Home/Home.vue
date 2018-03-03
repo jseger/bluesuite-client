@@ -9,6 +9,9 @@ export default {
   data () {
     return { }
   },
+  created () {
+
+  },
   computed: {
     isAuthenticated () {
       return this.$store.getters.isAuthenticated
