@@ -40,6 +40,12 @@ Vue.use(VueAuth, {
   logoutData: {url: 'user/logout', method: 'POST', redirect: '/', makeRequest: false}
 })
 
+Vue.filter('date', function (value) {
+  if (!value) return ''
+  var d = new Date(value)
+  return (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear()
+})
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
