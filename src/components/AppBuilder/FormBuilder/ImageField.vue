@@ -14,10 +14,10 @@
           accept="image/*"
           @change="onImagePicked">
         </v-flex>
-        <v-flex xs6 v-if="preview && (image !== null && image !== undefined)">
+        <v-flex xs6 v-if="preview && ($data._image !== null && $data._image !== undefined)">
           <div @click="onPickImage">
-          <img :src="image.imageUrl" :height="_height"></div>
-          <v-btn @click="onRemoveImage" v-if="image.imageUrl" flat icon>
+          <img :src="$data._image.imageUrl" :height="$data._height"></div>
+          <v-btn @click="onRemoveImage" v-if="$data._image.imageUrl" flat icon>
             <v-icon>delete</v-icon>
           </v-btn>
         </v-flex>
@@ -73,7 +73,11 @@ export default {
         width: '',
         preview: true
       },
-      dialog: false
+      dialog: false,
+      _image: {
+        imageUrl: null,
+        filename: null
+      }
     }
   },
   created () {
@@ -91,6 +95,7 @@ export default {
       width: this.width,
       preview: this.preview
     }
+    this.$data._image = this.image
   },
   computed: {
     widths () {
@@ -123,12 +128,14 @@ export default {
         const image = {imageUrl: fileReader.result, filename: filename}
         console.log(image)
         this.$emit('imageChanged', image)
+        this.$data._image = image
       })
       fileReader.readAsDataURL(files[0])
     },
     onRemoveImage () {
       this.$refs.imageInput.value = null
-      this.$emit('imageChanged', {imageUrl: null, filename: null})
+      this.$data._image = null
+      this.$emit('imageChanged', null)
     },
     ok () {
       console.log(this.mutable)
