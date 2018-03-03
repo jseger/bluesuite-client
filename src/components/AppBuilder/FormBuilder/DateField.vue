@@ -14,11 +14,11 @@
         <v-text-field
           slot="activator"
           :label="label"
-          v-model="_date"
+          v-model="$data._date"
           prepend-icon="event"
           readonly
         ></v-text-field>
-        <v-date-picker v-model="_date" no-title scrollable actions>
+        <v-date-picker v-model="binding_date" no-title scrollable actions>
           <template slot-scope="{ save, cancel }">
             <v-card-actions>
               <v-spacer></v-spacer>
@@ -76,14 +76,12 @@ export default {
         label: '',
         name: '',
         required: false,
-        multiLine: false,
-        prefix: '',
-        suffix: '',
         calculation: '',
         validation: '',
         width: ''
       },
-      dialog: false
+      dialog: false,
+      _date: null
     }
   },
   created () {
@@ -91,20 +89,19 @@ export default {
       label: this.label,
       name: this.name,
       required: this.required,
-      multiLine: this.multiLine,
-      prefix: this.prefix,
-      suffix: this.suffix,
       calculation: this.calculation,
       validation: this.validation,
       width: this.width
     }
+    this.$date._date = this.date
   },
   computed: {
-    _date: {
+    binding_date: {
       get () {
         return this.date
       },
       set (value) {
+        this.$data._date = value
         this.$emit('dateChanged', value)
       }
     },
@@ -131,9 +128,6 @@ export default {
         label: this.label,
         name: this.name,
         required: this.required,
-        multiLine: this.multiLine,
-        prefix: this.prefix,
-        suffix: this.suffix,
         calculation: this.calculation,
         validation: this.validation,
         width: this.width
