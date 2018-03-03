@@ -93,7 +93,7 @@ export default {
       validation: this.validation,
       width: this.width
     }
-    this.$date._date = this.date
+    this.$data._date = this.date
   },
   computed: {
     binding_date: {
