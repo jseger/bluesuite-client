@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-checkbox :label="label" :required="required" v-model="_checkState" class="ma-2"></v-checkbox>
+    <v-checkbox :label="label" :required="required" v-model="$data._checkState" class="ma-2"></v-checkbox>
 
   <v-dialog v-model="dialog" dialog>
     <v-btn slot="activator" v-if="canEditField" color="blue darken-2" flat icon>
@@ -44,7 +44,8 @@ export default {
   data () {
     return {
       mutable: null,
-      dialog: false
+      dialog: false,
+      _checkState: false
     }
   },
   created () {
@@ -56,13 +57,15 @@ export default {
       validation: this.validation,
       width: this.width
     }
+    this.$data._checkState = this.checkState
   },
   computed: {
-    _checkState: {
+    binding_checkState: {
       get () {
         return this.checkState
       },
       set (value) {
+        this.$data._checkState = value
         this.$emit('checkStateChanged', value)
       }
     },
