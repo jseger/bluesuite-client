@@ -8,6 +8,8 @@
         transition="scale-transition"
         offset-y
         full-width
+        :disabled="disabled"
+         :style="readonly ? 'pointer-events:none;' : ''"
         :nudge-right="40"
         max-width="290px"
         min-width="290px">
@@ -16,6 +18,7 @@
           :label="label"
           v-model="$data._date"
           prepend-icon="event"
+          :disabled="disabled"
           readonly
         ></v-text-field>
         <v-date-picker v-model="binding_date" no-title scrollable actions>
@@ -68,7 +71,7 @@
 
 <script>
 export default {
-  props: ['date', 'label', 'name', 'calculation', 'validation', 'width', 'canEditField', 'required'],
+  props: ['date', 'label', 'name', 'calculation', 'validation', 'width', 'canEditField', 'required', 'disabled', 'readonly'],
   data () {
     return {
       menu: null,

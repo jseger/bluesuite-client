@@ -54,11 +54,38 @@
         <v-list two-line subheader>
           <v-list-tile avatar>
             <v-list-tile-action>
+              <v-checkbox v-model="state.adminAction"></v-checkbox>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Admin Action</v-list-tile-title>
+              <v-list-tile-sub-title>If checked, the admin can move the submission to this state bypassing any approval process</v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile avatar>
+            <v-list-tile-action>
+              <v-checkbox v-model="state.adminCanEdit"></v-checkbox>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Admin Can Edit Submissions</v-list-tile-title>
+              <v-list-tile-sub-title>If checked, the admin can edit submissions in this state</v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile avatar>
+            <v-list-tile-action>
               <v-checkbox v-model="state.userAction"></v-checkbox>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>User Action</v-list-tile-title>
               <v-list-tile-sub-title>If checked, the user will see a button on the form with the action name</v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile avatar>
+            <v-list-tile-action>
+              <v-checkbox v-model="state.userCanEdit"></v-checkbox>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>User Can Edit Submissions</v-list-tile-title>
+              <v-list-tile-sub-title>If checked, the user can edit submissions in this state</v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-list-tile avatar>
@@ -111,18 +138,24 @@
               <v-select
                   label="Approvers"
                   hint="Approvers get notified when submission enters this state"
+                  v-bind:items="approvers"
+                  item-text="user.name"
+                  item-value="_id"
                   chips
-                  tags
                   prepend-icon=""
                   append-icon=""
                   clearable
+                  autocomplete
+                  return-object
+                  multiple
                   v-model="state.approvers">
                   <template slot="selection" slot-scope="data">
                     <v-chip
                       close
-                      @input="removeEmail(state.approvers, data.item)"
-                      :selected="data.selected">
-                      <strong>{{ data.item }}</strong>
+                      @input="removeUser(state.approvers, data.item.user._id)"
+                      :selected="data.selected"
+                      :key="data.item.user._id">
+                      <strong>{{ data.item.user.name }}</strong>
                     </v-chip>
                   </template>
                 </v-select>
@@ -205,19 +238,26 @@
             </v-list-tile-action>
             <v-list-tile-content>
               <v-select
-                  label="Send notificaitons to"
+                  label="Send notifications to"
+                  hint="Users here will get notified when the submissions enters this state"
+                  v-bind:items="users"
+                  item-text="user.name"
+                  item-value="_id"
                   chips
-                  tags
                   prepend-icon=""
                   append-icon=""
                   clearable
+                  autocomplete
+                  return-object
+                  multiple
                   v-model="state.alsoNotify">
                   <template slot="selection" slot-scope="data">
                     <v-chip
                       close
-                      @input="removeEmail(state.alsoNotify, data.item)"
-                      :selected="data.selected">
-                      <strong>{{ data.item }}</strong>
+                      @input="removeUser(state.alsoNotify, data.item.user._id)"
+                      :selected="data.selected"
+                      :key="data.item.user._id">
+                      <strong>{{ data.item.user.name }}</strong>
                     </v-chip>
                   </template>
                 </v-select>
@@ -231,12 +271,11 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { Swatches } from 'vue-color'
 import colors from 'vuetify/es5/util/colors'
 
 export default {
-  props: ['workflow'],
+  props: ['workflow', 'approvers', 'users'],
   data () {
     return {
       colors: []
@@ -264,16 +303,12 @@ export default {
       }
     }
   },
-  watch: {
-    approverEmail (val) {
-      val && this.searchForApprovers(val)
-    }
-  },
   methods: {
     addState () {
       this.workflow.states.push({
         name: 'State ' + (this.workflow.states.length + 1),
         userAction: true,
+        adminAction: true,
         actionName: 'Action ' + (this.workflow.states.length + 1),
         sendNotificationToCollaborators: true,
         requireApproval: true,
@@ -283,7 +318,9 @@ export default {
         approvers: [],
         approvedState: '',
         rejectedState: '',
-        color: 'blue'
+        color: 'blue',
+        adminCanEdit: false,
+        userCanEdit: false
       })
     },
     removeState (state) {
@@ -292,19 +329,8 @@ export default {
     addUser (array, user) {
       array.push(user)
     },
-    removeEmail (array, email) {
-      array.splice(array.indexOf(email), 1)
-    },
-    searchForApprovers (v) {
-      this.searching = true
-      axios.get('/user/search/' + encodeURIComponent(v))
-        .then((result) => {
-          this.searchApprovers.push(result.data.user)
-        })
-        .catch(() => { })
-        .finally(() => {
-          this.searching = false
-        })
+    removeUser (array, user) {
+      array.splice(array.indexOf(user._id), 1)
     }
   },
   components: {

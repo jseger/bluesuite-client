@@ -6,8 +6,12 @@ import Home from '@/components/Home/Home'
 import Login from '@/components/User/Login'
 import Register from '@/components/User/Register'
 import Profile from '@/components/User/Profile'
-import AppList from '@/components/AppBuilder/List'
-import AppBuilder from '@/components/AppBuilder/AppBuilder'
+import MyApps from '@/components/User/MyApps'
+import AppEdit from '@/components/AppBuilder/AppEdit'
+import AppForm from '@/Components/Home/AppForm'
+import FormPage from '@/components/Form/FormPage'
+import MyForms from '@/components/Form/MyForms'
+import SubmissionsPage from '@/components/AppBuilder/Submissions/SubmissionsPage'
 
 Vue.use(Router)
 
@@ -41,22 +45,57 @@ export default new Router({
       beforeEnter: AuthGuard
     },
     {
-      path: '/appBuilder',
-      name: 'Apps',
-      component: AppList,
+      path: '/myapps',
+      name: 'My Apps',
+      component: MyApps,
       beforeEnter: AuthGuard
     },
     {
-      path: '/appBuilder/edit/:id',
+      path: '/app/edit/:id',
       name: 'App Edit',
       props: true,
-      component: AppBuilder,
+      component: AppEdit,
       beforeEnter: AuthGuard
     },
     {
-      path: '/appBuilder/create',
+      path: '/app/create',
       name: 'App Create',
-      component: AppBuilder,
+      component: AppEdit,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/home/appForm/:id',
+      name: 'App Form',
+      props: true,
+      component: AppForm,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/myforms',
+      name: 'My Forms',
+      props: true,
+      component: MyForms,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/form/:appId',
+      name: 'Form',
+      props: true,
+      component: FormPage,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/form/:appId/:submissionId',
+      name: 'Form',
+      props: true,
+      component: FormPage,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/submissions/:appId',
+      name: 'Submissions',
+      props: true,
+      component: SubmissionsPage,
       beforeEnter: AuthGuard
     }
   ]

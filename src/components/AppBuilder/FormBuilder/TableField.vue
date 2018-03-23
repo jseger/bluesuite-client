@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-flex xs12>
-      <v-btn color="primary" flat @click="addItem()">
+      <v-btn color="primary" flat @click="addItem()" :disabled="disabled" :style="readonly ? 'pointer-events:none;' : ''">
           {{label}}
         <v-icon left>add</v-icon>
       </v-btn>
@@ -133,7 +133,8 @@
     </v-flex>
     <v-data-table
         v-bind:headers="columns"
-        :items="itemList"
+        :items="items"
+        item-key="id"
         hide-actions 
         :expand="true"
         class="elevation-1">
@@ -144,13 +145,13 @@
           </tr>
         </template>
         <template slot="items" slot-scope="props">
-          <tr>
-            <td><v-btn color="error" @click="removeItem(props.item)" icon flat class="text-xs-left"><v-icon>delete_forever</v-icon></v-btn></td>
+            <td><v-btn color="error" @click="removeItem(props.item)" icon flat class="text-xs-left" :disabled="disabled" v-if="!readonly"><v-icon>delete_forever</v-icon></v-btn></td>
             <td :key="i" v-for="(column, i) in columns" :class="column.alignText">
               <template v-if="column.columnType === 'text'">
                 <bs-text-field 
                 :required="column.required"
                 :multi-line="column.multiLine"
+                :disabled="disabled"
                 :prefix="column.prefix"
                 :suffix="column.suffix" 
                 :text="props.item[column.name]" 
@@ -160,25 +161,34 @@
                 <bs-number-field 
                 :required="column.required"
                 :multi-line="column.multiLine"
+                :disabled="disabled"
                 :prefix="column.prefix"
                 :suffix="column.suffix" 
                 :number="props.item[column.name]" 
-                v-on:textChanged="number => {props.item[column.name] = number}"></bs-number-field>
+                v-on:numberChanged="number => {props.item[column.name] = number}"></bs-number-field>
               </template>
               <template v-else-if="column.columnType === 'checkbox'">
                 <bs-checkbox 
-                  :required="column.required" :checkState="props.item[column.name]"
+                  :required="column.required" 
+                  :checkState="props.item[column.name]"
+                  :disabled="disabled"
                   v-on:checkStateChanged="checkState => {props.item[column.name] = checkState}"></bs-checkbox>
               </template>
               <template v-else-if="column.columnType === 'image'">
-                <bs-image-field :image="props.item[column.name]" :icon="true" :height="'50px'" v-on:imageChanged="image => {props.item[column.name] = image}" :preview="column.preview"></bs-image-field>
+                <bs-image-field :image="props.item[column.name]"
+                :disabled="disabled" 
+                :icon="true" :height="'50px'" 
+                v-on:imageChanged="image => {props.item[column.name] = image}" 
+                :preview="column.preview"></bs-image-field>
               </template>
               <template v-else-if="column.columnType === 'date'">
-                <bs-date-field :date="props.item[column.name]" 
+                <bs-date-field :date="props.item[column.name]"
+                :disabled="disabled"
                 v-on:dateChanged="date => {props.item[column.name] = date}"></bs-date-field>
               </template>
               <template v-else-if="column.columnType === 'select'">
-                <bs-select-field :label="column.label" 
+                <bs-select-field :label="column.label"
+                    :disabled="disabled"
                     :selectedOption="props.item[column.name]" 
                     :options="column.options" 
                     :required="column.required"
@@ -188,7 +198,6 @@
                     v-on:selectionChanged="option => {props.item[column.name] = option}"></bs-select-field>
               </template>
             </td>
-          </tr>
         </template>
       </v-data-table>
 
@@ -207,7 +216,7 @@ import BsSelectField from '@/components/Appbuilder/FormBuilder/SelectField'
 import draggable from 'vuedraggable'
 
 export default {
-  props: ['columns', 'label', 'items', 'canEditField', 'width', 'name', 'required'],
+  props: ['columns', 'label', 'items', 'canEditField', 'width', 'name', 'required', 'disabled', 'readonly'],
   data () {
     return {
       mutable: null,
@@ -227,15 +236,20 @@ export default {
       tableColumns: []
     }
     m.tableColumns.splice(0)
-    this.columns.forEach(column => {
-      m.tableColumns.push(Object.assign({}, column))
-    })
+
+    if (this.columns !== undefined) {
+      this.columns.forEach(column => {
+        m.tableColumns.push(Object.assign({}, column))
+      })
+    }
 
     this.mutable = m
-
-    this.items.forEach(item => {
-      this.itemList.push(Object.assign({}, item))
-    })
+    // this.itemList = []
+    // if (this.items !== undefined) {
+    //   this.items.forEach(item => {
+    //     this.itemList.push(Object.assign({id: this.uuidv4()}, item))
+    //   })
+    // }
   },
   components: {
     'bs-image-field': BsImageField,
@@ -265,7 +279,7 @@ export default {
     },
     addColumn () {
       this.mutable.tableColumns.push({
-        id: Date.now().toString(),
+        id: this.uuidv4(),
         label: 'Column' + (this.mutable.tableColumns.length + 1),
         columnType: 'text',
         alignText: 'text-xs-left',
@@ -282,7 +296,7 @@ export default {
       })
     },
     addItem () {
-      let item = {id: Date.now().toString()}
+      let item = {id: this.uuidv4()}
       this.columns.forEach(column => {
         item[column.name] = null
       })
@@ -290,7 +304,7 @@ export default {
       this.$emit('itemAdded', item)
     },
     removeItem (item) {
-      this.itemList.splice(this.items.indexOf(item), 1)
+      this.itemList.splice(this.itemList.indexOf(item), 1)
       this.$emit('itemRemoved', item)
     },
     ok () {

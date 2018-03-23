@@ -6,7 +6,7 @@
           <v-btn 
           outline 
           :icon="icon"
-          @click="onPickImage"><v-icon>insert_photo</v-icon> {{label}}</v-btn>
+          @click="onPickImage" :disabled="disabled" :style="readonly ? 'pointer-events:none;' : ''"><v-icon>insert_photo</v-icon> {{label}}</v-btn>
           <input 
           type="file" 
           style="display: none;" 
@@ -17,7 +17,7 @@
         <v-flex xs6 v-if="preview && ($data._image !== null && $data._image !== undefined)">
           <div @click="onPickImage">
           <img :src="$data._image.imageUrl" :height="$data._height"></div>
-          <v-btn @click="onRemoveImage" v-if="$data._image.imageUrl" flat icon>
+          <v-btn @click="onRemoveImage" v-if="$data._image.imageUrl && !readonly" flat icon>
             <v-icon>delete</v-icon>
           </v-btn>
         </v-flex>
@@ -60,7 +60,7 @@
 
 <script>
 export default {
-  props: ['image', 'label', 'preview', 'icon', 'height', 'required', 'width', 'name', 'canEditField'],
+  props: ['image', 'label', 'preview', 'icon', 'height', 'required', 'width', 'name', 'canEditField', 'disabled', 'readonly'],
   data () {
     return {
       _height: '150px',

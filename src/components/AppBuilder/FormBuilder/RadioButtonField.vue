@@ -1,8 +1,8 @@
 <template>
-  <v-layout>
+  <v-layout :style="readonly ? 'pointer-events:none; dislay:block;' : ''">
     <v-radio-group :label="label" :mandatory="required" :row="horizontal" v-model="_selectedOption" class="ma-2">
       <template v-for="opt in options">
-        <v-radio :label="opt" :value="opt" :key="opt"></v-radio>
+        <v-radio :label="opt" :value="opt" :key="opt" :disabled="disabled"></v-radio>
       </template>
     </v-radio-group>  
 
@@ -60,7 +60,7 @@
 
 <script>
 export default {
-  props: ['options', 'label', 'selectedOption', 'horizontal', 'required', 'canEditField', 'width', 'name'],
+  props: ['options', 'label', 'selectedOption', 'horizontal', 'required', 'canEditField', 'width', 'name', 'disabled', 'readonly'],
   data () {
     return {
       mutable: null,

@@ -82,7 +82,7 @@ export default {
   watch: {
     user (value) {
       if (value !== null && value !== undefined) {
-        this.$router.push('/home')
+        this.$router.push('/myapps')
       }
     }
   },
@@ -90,7 +90,7 @@ export default {
     onSignin () {
       this.$store.dispatch('login', {email: this.email, password: this.password})
       .then(() => {
-        this.$router.push('/home')
+        this.$router.push('/myapps')
       })
       .catch((err) => {
         console.log(err)

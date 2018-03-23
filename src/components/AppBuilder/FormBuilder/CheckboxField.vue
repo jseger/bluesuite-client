@@ -1,7 +1,6 @@
 <template>
   <v-layout>
-    <v-checkbox :label="label" :required="required" v-model="$data._checkState" class="ma-2"></v-checkbox>
-
+      <v-checkbox :label="label" :required="required" v-model="$data._checkState" @change="checkStateChanged()" class="ma-2" :disabled="disabled" :style="readonly ? 'pointer-events:none;' : ''"></v-checkbox>
   <v-dialog v-model="dialog" dialog>
     <v-btn slot="activator" v-if="canEditField" color="blue darken-2" flat icon>
       <v-icon>edit</v-icon>
@@ -40,7 +39,7 @@
 
 <script>
 export default {
-  props: ['checkState', 'label', 'required', 'calculation', 'validation', 'width', 'name', 'canEditField'],
+  props: ['checkState', 'label', 'required', 'calculation', 'validation', 'width', 'name', 'canEditField', 'disabled', 'readonly'],
   data () {
     return {
       mutable: null,
@@ -60,15 +59,6 @@ export default {
     this.$data._checkState = this.checkState
   },
   computed: {
-    binding_checkState: {
-      get () {
-        return this.checkState
-      },
-      set (value) {
-        this.$data._checkState = value
-        this.$emit('checkStateChanged', value)
-      }
-    },
     widths () {
       let widths = []
       for (let index = 0; index < 12; index++) {
@@ -100,6 +90,9 @@ export default {
     remove () {
       this.$emit('fieldRemoved')
       this.dialog = false
+    },
+    checkStateChanged () {
+      this.$emit('checkStateChanged', this.$data._checkState)
     }
   }
 }

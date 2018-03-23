@@ -93,6 +93,7 @@
     </v-toolbar>
     <v-content>
       <router-view/>
+      <v-progress-linear indeterminate v-bind:size="250" color="primary" v-if="loading"></v-progress-linear>
     </v-content>
     <!-- <v-snackbar :timeout="12000" v-model="notification" :multi-line="true" color="success">{{notificationText}}
       <v-btn flat @click.native="notification = false">Close</v-btn>
@@ -103,33 +104,38 @@
     <v-snackbar :timeout="12000" v-model="warning" color="warning">{{warningText}}</v-snackbar>
     <v-snackbar :timeout="12000" v-model="info" color="info">{{infoText}}</v-snackbar> -->
     <confirm ref="confirm"></confirm>
+    <input-dialog ref="inputDialog"></input-dialog>
     <notifications group="error" position="top center" type="error"/>
     <notifications group="success" position="bottom right" type="success"/>
     <notifications group="warning" position="bottom right" type="warning"/>
     <notifications group="info" position="top right" type="info"/>
-    <v-progress-circular indeterminate v-bind:size="250" color="primary" v-if="appLoading"></v-progress-circular>
+    <v-dialog v-model="appLoading" dialog persistent>
+      <v-card>
+        <v-card-text>
+          <div style="text-align: center; height: 300px;">
+            <v-progress-circular indeterminate v-bind:size="250" color="primary"></v-progress-circular>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
 <script>
 import Confirm from '@/components/Shared/ConfirmDialog'
+import InputDialog from '@/components/Shared/InputDialog'
 
 export default {
   data () {
     return {
-      title: 'HawkWare Web App',
+      title: 'BlueSuite',
       imageUrl: null,
       mini: false,
       menuItems: [
         {
-          title: 'Home',
-          icon: 'home',
-          href: '/home'
-        },
-        {
-          title: 'App Builder',
-          icon: 'build',
-          href: '/appBuilder'
+          title: 'My Apps',
+          icon: 'view_quilt',
+          href: '/myapps'
         }
       ]
     }
@@ -182,10 +188,12 @@ export default {
     }
   },
   components: {
-    'confirm': Confirm
+    'confirm': Confirm,
+    'input-dialog': InputDialog
   },
   mounted () {
     this.$root.$confirm = this.$refs.confirm.open
+    this.$root.$inputDialog = this.$refs.inputDialog.open
   }
 }
 </script>

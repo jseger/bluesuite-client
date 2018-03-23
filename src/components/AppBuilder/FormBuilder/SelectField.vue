@@ -6,6 +6,8 @@
     :items="options"
     v-model="_selectedOption"
     class="ma-2"
+    :disabled="disabled"
+    :readonly="readonly"
     autocomplete>
   </v-select>
 
@@ -59,7 +61,7 @@
 
 <script>
 export default {
-  props: ['options', 'selectedOption', 'multiple', 'label', 'required', 'multiple', 'canEditField', 'width', 'name'],
+  props: ['options', 'selectedOption', 'multiple', 'label', 'required', 'multiple', 'canEditField', 'width', 'name', 'disabled', 'readonly'],
   data () {
     return {
       mutable: {

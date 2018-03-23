@@ -46,6 +46,19 @@ Vue.filter('date', function (value) {
   return (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear()
 })
 
+// create some mixins
+Vue.mixin({
+  methods: {
+    uuidv4 () {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0
+        var v = c === 'x' ? r : (r & 0x3 | 0x8)
+        return v.toString(16)
+      })
+    }
+  }
+})
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
@@ -59,7 +72,7 @@ new Vue({
     this.$store.dispatch('autoLogin')
     .then((result) => {
       if (result) {
-        this.$router.push('/home')
+        this.$router.push('/myapps')
       } else {
         this.$router.push('/login')
       }

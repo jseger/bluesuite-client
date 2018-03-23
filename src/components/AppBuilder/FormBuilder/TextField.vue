@@ -5,7 +5,9 @@
       :required="required"
       :multi-line="multiLine"
       :prefix="prefix"
+      :disabled="disabled"
       :suffix="suffix" 
+      :readonly="readonly"
       class="ma-2"
       v-model="_text"></v-text-field>
 
@@ -49,7 +51,7 @@
 
 <script>
 export default {
-  props: ['text', 'label', 'required', 'multiLine', 'prefix', 'suffix', 'calculation', 'validation', 'name', 'width', 'canEditField'],
+  props: ['text', 'label', 'required', 'multiLine', 'prefix', 'suffix', 'calculation', 'validation', 'name', 'width', 'canEditField', 'disabled', 'readonly'],
   data () {
     return {
       mutable: null,

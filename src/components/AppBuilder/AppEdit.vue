@@ -31,10 +31,6 @@
           <v-icon>description</v-icon>
           Reports
         </v-tabs-item>
-        <v-tabs-item href="#collaborators">
-          <v-icon>people</v-icon>
-          Collaborators
-        </v-tabs-item>
         <v-tabs-item href="#users">
           <v-icon>people_outline</v-icon>
           Users
@@ -43,15 +39,13 @@
     </v-toolbar>
     <v-tabs-items>
       <v-tabs-content id="forms">
-        <form-builder :form="app.form" :workflow="app.workflow"></form-builder>
+        <form-builder ref="formBuilder" :form="app.form" :workflow="app.workflow"></form-builder>
       </v-tabs-content>
       <v-tabs-content id="workflow">
-        <workflow-builder :workflow="app.workflow"></workflow-builder>
+        <workflow-builder :workflow="app.workflow" :users="appUsers" :approvers="approvers"></workflow-builder>
       </v-tabs-content>
       <v-tabs-content id="submissions">
-        <v-card flat>
-          <v-card-text>submissions</v-card-text>
-        </v-card>
+        <submissions :appId="id"></submissions>
       </v-tabs-content>
       <v-tabs-content id="data">
         <v-card flat>
@@ -63,42 +57,49 @@
           <v-card-text>reports</v-card-text>
         </v-card>
       </v-tabs-content>
-      <v-tabs-content id="collaborators">
-        <collaborators :users="app.collaborators" :appId="app._id"></collaborators>
-      </v-tabs-content>
       <v-tabs-content id="users">
-        <v-card flat>
-          <v-card-text>users</v-card-text>
-        </v-card>
+        <app-users :appId="app._id" v-on:appUsersLoaded="users => onUsersLoaded(users)"></app-users>
       </v-tabs-content>
     </v-tabs-items>
   </v-tabs>
 </template>
 
 <script>
+import axios from 'axios'
 import FormBuilder from './FormBuilder/FormBuilder'
 import WorkflowBuilder from './WorkflowBuilder/WorkflowBuilder'
+import Submissions from '@/components/AppBuilder/Submissions/Submissions'
 import Collaborators from './Collaborators/Collaborators'
+import AppUsers from './AppUsers'
 
 export default {
   props: ['id'],
   data () {
     return {
       app: { },
-      tab: ''
+      roles: ['admin'],
+      tab: '',
+      loading: false,
+      appUsers: [],
+      approvers: []
     }
   },
   created () {
-    var _this = this
     if (this.$route.params.id !== null && this.$route.params.id !== undefined) {
-      this.$store.dispatch('fetchApp', {id: this.$route.params.id})
-      .then((result) => {
-        if (result) {
-          _this.app = Object.assign({}, _this.$store.getters.app)
-        }
+      this.loading = true
+      axios.get('apps/' + this.$route.params.id)
+      .then(result => {
+        this.app = result.data.app
+        this.roles = result.data.roles
+      })
+      .catch(err => {
+        this.$notify({group: 'error', text: err.response.data.message, type: 'error'})
+      })
+      .finally(() => {
+        this.loading = false
       })
     } else {
-      _this.app = {
+      this.app = {
         name: '',
         form: {
           fields: []
@@ -109,6 +110,7 @@ export default {
           states: [{
             name: 'Submitted',
             userAction: true,
+            adminAction: false,
             actionName: 'Submit',
             sendNotificationToCollaborators: true,
             requireApproval: true,
@@ -119,11 +121,14 @@ export default {
             approvers: [],
             approvedState: 'Approved',
             rejectedState: 'Rejected',
-            color: 'blue'
+            color: 'blue',
+            adminCanEdit: false,
+            userCanEdit: true
           },
           {
             name: 'Approved',
             userAction: false,
+            adminAction: true,
             actionName: 'Approve',
             sendNotificationToCollaborators: false,
             requireApproval: false,
@@ -134,11 +139,14 @@ export default {
             approvers: [],
             approvedState: '',
             rejectedState: '',
-            color: 'green'
+            color: 'green',
+            dminCanEdit: false,
+            userCanEdit: false
           },
           {
             name: 'Rejected',
             userAction: false,
+            adminAction: true,
             actionName: 'Reject',
             sendNotificationToCollaborators: false,
             requireApproval: false,
@@ -149,17 +157,17 @@ export default {
             approvers: [],
             approvedState: '',
             rejectedState: '',
-            color: 'red'
+            color: 'red',
+            adminCanEdit: false,
+            userCanEdit: true
           }]
         }
       }
     }
   },
   computed: {
-    loading: {
-      get () {
-        return this.$store.getters.loading
-      }
+    isAuthenticated () {
+      return this.$store.getters.isAuthenticated
     },
     canSave () {
       return this.app.name !== null && this.app.name !== undefined && this.app.name !== ''
@@ -168,18 +176,44 @@ export default {
   methods: {
     onSave () {
       var _this = this
-      this.$store.dispatch('saveApp', this.app)
-      .then((result) => {
-        if (result) {
-          _this.app = Object.assign({}, _this.$store.getters.app)
-        }
-      })
+      this.loading = true
+      if (_this.app._id !== undefined) {
+        axios.patch('/apps/' + _this.app._id, _this.app)
+        .then((result) => {
+          _this.app = result.data.app
+          _this.$notify({group: 'success', text: 'App Saved!', type: 'success'})
+        })
+        .catch((err) => {
+          _this.$notify({group: 'error', text: err.response.data.message, type: 'error'})
+        })
+        .finally(() => {
+          _this.loading = false
+        })
+      } else {
+        axios.post('/apps/', _this.app)
+        .then((result) => {
+          _this.app = result.data.app
+          _this.$notify({group: 'success', text: 'App Saved!', type: 'success'})
+        })
+        .catch((err) => {
+          _this.$notify({group: 'error', text: err.response.data.message, type: 'error'})
+        })
+        .finally(() => {
+          _this.loading = false
+        })
+      }
+    },
+    onUsersLoaded (users) {
+      this.appUsers = users
+      this.approvers = users.filter(u => u.roles.some(r => r === 'approver'))
     }
   },
   components: {
     'form-builder': FormBuilder,
     'workflow-builder': WorkflowBuilder,
-    'collaborators': Collaborators
+    'collaborators': Collaborators,
+    'app-users': AppUsers,
+    'submissions': Submissions
   }
 }
 </script>

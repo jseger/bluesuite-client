@@ -416,7 +416,7 @@ export default {
           element[key] = original[key]
         }
       }
-      element.id = Date.now().toString()
+      element.id = this.uuidv4()
       console.log(element)
       return element
     },

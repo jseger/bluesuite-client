@@ -31,12 +31,12 @@ export default {
           localStorage.setItem('token', result.data.token)
           commit('setIsAuthenticated', true)
           const token = decode(result.data.token)
-          commit('setUser', {email: token.email, name: token.name})
+          commit('setUser', {email: token.email, name: token.name, userId: token.userId})
           commit('pushNotification', 'Profile updated!')
           resolve(true)
         })
         .catch(err => {
-          commit('pushError', err.message)
+          commit('pushError', err.response.data.message)
           reject(err)
         })
       })
@@ -52,7 +52,7 @@ export default {
           resolve(true)
         })
         .catch(err => {
-          commit('pushError', err.message)
+          commit('pushError', err.response.data.message)
           reject(err)
         })
       })
@@ -68,16 +68,18 @@ export default {
           localStorage.setItem('token', result.data.token)
           commit('setIsAuthenticated', true)
           const token = decode(result.data.token)
-          commit('setUser', {email: token.email, name: token.name})
+          commit('setUser', {email: token.email, name: token.name, userId: token.userId})
           axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
           resolve(true)
         })
         .catch(err => {
-          commit('pushError', err.message)
+          commit('pushError', err.response.data.message)
           reject(err)
         })
         .finally(() => {
-          commit('setAppLoading', false)
+          setTimeout(() => {
+            commit('setAppLoading', false)
+          }, 2000)
         })
       })
     },
@@ -93,12 +95,12 @@ export default {
           localStorage.setItem('token', result.data.token)
           commit('setIsAuthenticated', true)
           const token = decode(result.data.token)
-          commit('setUser', {email: token.email, name: token.name})
+          commit('setUser', {email: token.email, name: token.name, userId: token.userId})
           axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
           resolve(true)
         })
         .catch(err => {
-          commit('pushError', err.message)
+          commit('pushError', err.response.data.message)
         })
         .finally(() => {
           commit('setAppLoading', false)
@@ -122,7 +124,7 @@ export default {
               date.setUTCSeconds(token.exp)
               if (date > new Date()) {
                 commit('setIsAuthenticated', true)
-                commit('setUser', {email: token.email, name: token.name})
+                commit('setUser', {email: token.email, name: token.name, userId: token.userId})
                 axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
                 resolve(true)
                 return
@@ -143,13 +145,13 @@ export default {
           localStorage.setItem('token', result.data.token)
           commit('setIsAuthenticated', true)
           const token = decode(result.data.token)
-          commit('setUser', {email: token.email, name: token.name})
+          commit('setUser', {email: token.email, name: token.name, userId: token.userId})
           axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
           resolve(true)
         })
         .catch(err => {
           commit('setIsAuthenticated', false)
-          commit('pushError', err.message)
+          commit('pushError', err.response.data.message)
           reject(err)
         })
       })

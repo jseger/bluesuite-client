@@ -88,7 +88,7 @@ export default {
           })
         } else {
           console.log(payload)
-          axios.post('/apps/create', payload)
+          axios.post('/apps/', payload)
           .then((result) => {
             commit('setApp', result.data.app)
             commit('pushNotification', 'App saved!')

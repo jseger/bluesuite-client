@@ -34,6 +34,9 @@ export default {
   actions: {
     pageTitle ({commit}, payload) {
       commit('setPageTitle', payload)
+    },
+    setLoading ({commit}, payload) {
+      commit('setLoading', payload)
     }
   },
   getters: {
@@ -45,6 +48,9 @@ export default {
     },
     pageTitle (state) {
       return state.pageTitle
+    },
+    appLoading (state) {
+      return state.appLoading
     }
   }
 }

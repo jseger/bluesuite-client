@@ -1,48 +1,52 @@
 <template>
-  <v-layout row wrap>
-     <v-flex xs12>
-      <v-card>
-        <v-toolbar class="primary" dark>
-          <v-toolbar-title>Forms</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn flat router to="/forms/create">
-              <v-icon>add</v-icon>
-              Create Form
-            </v-btn>
-          </v-toolbar-items>
-        </v-toolbar>
-        <v-list two-line :v-if="!loading">
-          <v-list-tile avatar v-for="form in forms" :key="form.id">
-            <v-list-tile-content>
-              <v-list-tile-title>{{form.title}}</v-list-tile-title>
-              <v-list-tile-sub-title>{{form.description}}</v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-spacer></v-spacer>
-            <v-btn @click="onRemoveForm(form.id, form.title)">Remove</v-btn>
-            <v-btn router :to="'forms/edit/' + form.id">Edit</v-btn>
-          </v-list-tile>
-        </v-list>
+<v-container>
+  <v-layout row wrap v-if="!loading">
+     <v-flex sm12 md6 lg4 v-for="app in apps" :key="app._id">
+      <v-card class="ma-5 elevation-16">
+        <v-card-media style="pointer-events: none;" height="100px">
+          <bs-form-component :app="app.app" :disabled="true" style="pointer-events: none;"></bs-form-component>
+        </v-card-media>
+        <v-card-title primary-title>
+          <div>
+            <h3 class="headline mb-0">{{app.name}}</h3>
+            <div></div>
+          </div>
+        </v-card-title>
+        <v-card-actions>
+          <v-btn flat color="blue" :to="'/form/' + app._id">New</v-btn>
+          <v-btn flat color="blue" :to="'/form/' + app._id">Saved</v-btn>
+          <v-btn flat color="blue">Submissions</v-btn>
+        </v-card-actions>
       </v-card>
     </v-flex>
   </v-layout>
+  <v-progress-linear indeterminate v-bind:size="250" color="primary" v-if="loading"></v-progress-linear>
+</v-container>
 </template>
 
 <script>
+import axios from 'axios'
+import FormComponent from '@/components/Form/FormComponent'
+
 export default {
   data () {
-    return { }
+    return {
+      apps: [],
+      loading: false
+    }
   },
   created () {
-    this.$store.dispatch('fetchForms')
-  },
-  computed: {
-    forms () {
-      return this.$store.getters.forms
-    },
-    loading () {
-      return this.$store.getters.loading
-    }
+    this.loading = true
+    axios.get('/user/apps')
+      .then((result) => {
+        this.apps = result.data.apps
+      })
+      .catch(err => {
+        this.$notify({group: 'error', text: err.response.data.message, type: 'error'})
+      })
+      .finally(() => {
+        this.loading = false
+      })
   },
   methods: {
     onRemoveForm (formId, name) {
@@ -57,6 +61,9 @@ export default {
           console.log(error)
         })
     }
+  },
+  components: {
+    'bs-form-component': FormComponent
   }
 }
 </script>

@@ -7,6 +7,8 @@
       :multi-line="false"
       :prefix="prefix"
       :suffix="suffix" 
+      :disabled="disabled"
+      :readonly="readonly"
       class="ma-2"
       v-model="_number" @change="$emit('valueChanged', _number)"></v-text-field>
 
@@ -49,7 +51,7 @@
 
 <script>
 export default {
-  props: ['number', 'label', 'required', 'prefix', 'suffix', 'name', 'width', 'canEditField'],
+  props: ['number', 'label', 'required', 'prefix', 'suffix', 'name', 'width', 'canEditField', 'disabled', 'readonly'],
   data () {
     return {
       mutable: {
@@ -86,7 +88,8 @@ export default {
         if (isNaN(value)) {
           return
         }
-        this.$emit('numberChanged', parseInt(value, 10))
+        console.log(value)
+        this.$emit('numberChanged', Number(value))
       }
     },
     widths () {
